@@ -1,0 +1,9 @@
+dist/
+*.plist
+*.shsh
+*.shsh2
+venv/
+*.pyc
+__pycache__
+.idea/
+.DS_Store

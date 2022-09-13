@@ -3,7 +3,7 @@ name = "pybmtool"
 version = "0.1.0"
 description = "A Python library/CLI tool for parsing Apple's BuildManifest plist files inside a firmware ipsw/ota."
 authors = ["Cryptiiiic <liamwqs@gmail.com>"]
-license = "MIT"
+license = "lgpl-3.0"
 readme = "README.md"
 repository = "https://github.com/Cryptiiiic/BMTool"
 

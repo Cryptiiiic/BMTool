@@ -18,16 +18,20 @@ class BMParse:
             self.outDir = outDir
         if not self.buildManifestPath or len(self.buildManifestPath) < 1:
             if not self.url or len(self.url) < 1:
-                raise AssertionError(f"{self.__class__.__name__}: {self.__init__.__name__}: buildManifestPath and url "
-                                     f"are both empty, no data to use!")
+                raise ValueError(
+                    f"{self.__class__.__name__}: {self.__init__.__name__}: buildManifestPath and url "
+                    f"are both empty, no data to use!"
+                )
             else:
                 self.remoteZip = remotezip.RemoteZip(url=self.url)
                 if not self.remoteZip:
                     raise Exception
                 self.buildManifestPath = f"{self.outDir}/BuildManifest.plist"
                 if not self.downloadManifest():
-                    raise AssertionError(f"{self.__class__.__name__}: {self.__init__.__name__}: failed to download "
-                                         f"manifest!")
+                    raise ValueError(
+                        f"{self.__class__.__name__}: {self.__init__.__name__}: failed to download "
+                        f"manifest!"
+                    )
         self.loadManifest()
 
     def downloadManifest(self) -> bool:
@@ -46,15 +50,30 @@ class BMParse:
                 manifestFile.write(data)
                 return True
 
-            if not fileIO(path=self.buildManifestPath, binary=True, write=True, callback=openManifest):
-                raise AssertionError(f"{self.__class__.__name__}: {self.downloadManifest.__name__}: failed to open manifest"
-                                     f" for writing")
+            if not fileIO(
+                path=self.buildManifestPath,
+                binary=True,
+                write=True,
+                callback=openManifest,
+            ):
+                raise ValueError(
+                    f"{self.__class__.__name__}: {self.downloadManifest.__name__}: failed to open manifest"
+                    f" for writing"
+                )
         if not response or response.status != 200:
             try:
-                if len(self.remoteZip.extract(member="BuildManifest.plist", path=self.outDir)) < 1:
-                    raise AssertionError(
+                if (
+                    len(
+                        self.remoteZip.extract(
+                            member="BuildManifest.plist", path=self.outDir
+                        )
+                    )
+                    < 1
+                ):
+                    raise ValueError(
                         f"{self.__class__.__name__}: {self.downloadManifest.__name__}: failed to download "
-                        f"BuildManifest!")
+                        f"BuildManifest!"
+                    )
             except:
                 pass
         return True
@@ -68,9 +87,13 @@ class BMParse:
             else:
                 return True
 
-        if not fileIO(path=self.buildManifestPath, binary=True, write=False, callback=openManifest):
-            raise AssertionError(f"{self.__class__.__name__}: {self.loadManifest.__name__}: failed to open manifest "
-                                 f"file!")
+        if not fileIO(
+            path=self.buildManifestPath, binary=True, write=False, callback=openManifest
+        ):
+            raise ValueError(
+                f"{self.__class__.__name__}: {self.loadManifest.__name__}: failed to open manifest "
+                f"file!"
+            )
         else:
             return True
 
@@ -82,10 +105,14 @@ class BMParse:
                         if identity["Info"]["DeviceClass"].__eq__(board):
                             if identity["Info"].get("RestoreBehavior", None):
                                 if update:
-                                    if identity["Info"]["RestoreBehavior"].__eq__("Update"):
+                                    if identity["Info"]["RestoreBehavior"].__eq__(
+                                        "Update"
+                                    ):
                                         return identity
                                 else:
-                                    if identity["Info"]["RestoreBehavior"].__eq__("Erase"):
+                                    if identity["Info"]["RestoreBehavior"].__eq__(
+                                        "Erase"
+                                    ):
                                         return identity
             return {}
         else:
@@ -94,8 +121,10 @@ class BMParse:
     def getComponentPath(self, board: str, component: str, update: bool = False) -> str:
         identity = self.getBoardIdentity(board, update)
         if len(identity) < 1:
-            raise AssertionError(f"{self.__class__.__name__}: {self.getComponentPath.__name__}: failed to find matching"
-                                 f" board identity!")
+            raise ValueError(
+                f"{self.__class__.__name__}: {self.getComponentPath.__name__}: failed to find matching"
+                f" board identity!"
+            )
         if identity.get("Manifest", None):
             if identity["Manifest"].get(component, None):
                 if identity["Manifest"][component].get("Info", None):
@@ -106,8 +135,10 @@ class BMParse:
     def getComponentList(self, board, update: bool = False) -> list:
         identity = self.getBoardIdentity(board, update)
         if len(identity) < 1:
-            raise AssertionError(f"{self.__class__.__name__}: {self.getComponentList.__name__}: failed to find matching"
-                                 f" board identity!")
+            raise ValueError(
+                f"{self.__class__.__name__}: {self.getComponentList.__name__}: failed to find matching"
+                f" board identity!"
+            )
         if identity.get("Manifest", None):
             return list(identity["Manifest"].keys())
 

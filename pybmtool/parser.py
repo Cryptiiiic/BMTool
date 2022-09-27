@@ -1,46 +1,45 @@
-import http.client
 import os
 import io
 import plistlib
 import urllib.request
 import remotezip
-from pybmtool.utils import fileIO
+from pybmtool import file_io
 
 
 class BMParse:
-    def __init__(self, buildManifestPath: str = "", url: str = "", outDir: str = ""):
-        self.buildManifestPath = buildManifestPath
+    def __init__(self, build_manifest_path: str = "", url: str = "", outdir: str = ""):
+        self.build_manifest_path = build_manifest_path
         self.url = url
-        self.outDir = f"{os.getcwd()}"
-        self.remoteZip = ""
+        self.outdir = f"{os.getcwd()}"
+        self.remote_zip = ""
         self.manifest = {}
-        if outDir and len(outDir) > 0:
-            self.outDir = outDir
-        if not self.buildManifestPath or len(self.buildManifestPath) < 1:
+        if outdir and len(outdir) > 0:
+            self.outdir = outdir
+        if not self.build_manifest_path or len(self.build_manifest_path) < 1:
             if not self.url or len(self.url) < 1:
                 raise ValueError(
                     f"{self.__class__.__name__}: {self.__init__.__name__}: buildManifestPath and url "
                     f"are both empty, no data to use!"
                 )
             else:
-                self.remoteZip = remotezip.RemoteZip(url=self.url)
-                if not self.remoteZip:
+                self.remote_zip = remotezip.RemoteZip(url=self.url)
+                if not self.remote_zip:
                     raise Exception
-                self.buildManifestPath = f"{self.outDir}/BuildManifest.plist"
-                if not self.downloadManifest():
+                self.build_manifest_path = f"{self.outdir}/BuildManifest.plist"
+                if not self.download_manifest():
                     raise ValueError(
                         f"{self.__class__.__name__}: {self.__init__.__name__}: failed to download "
                         f"manifest!"
                     )
-        self.loadManifest()
+        self.load_manifest()
 
-    def downloadManifest(self) -> bool:
-        if os.path.exists(self.buildManifestPath):
-            os.remove(self.buildManifestPath)
-        manifestURL = f"{self.url.rsplit('/', 1)[0]}/BuildManifest.plist"
+    def download_manifest(self) -> bool:
+        if os.path.exists(self.build_manifest_path):
+            os.remove(self.build_manifest_path)
+        manifest_url = f"{self.url.rsplit('/', 1)[0]}/BuildManifest.plist"
         response = None
         try:
-            response = urllib.request.urlopen(url=manifestURL)
+            response = urllib.request.urlopen(url=manifest_url)
         except:
             pass
         if response is not None:
@@ -50,54 +49,57 @@ class BMParse:
                 manifestFile.write(data)
                 return True
 
-            if not fileIO(
-                path=self.buildManifestPath,
+            if not file_io(
+                path=self.build_manifest_path,
                 binary=True,
                 write=True,
                 callback=openManifest,
             ):
                 raise ValueError(
-                    f"{self.__class__.__name__}: {self.downloadManifest.__name__}: failed to open manifest"
+                    f"{self.__class__.__name__}: {self.download_manifest.__name__}: failed to open manifest"
                     f" for writing"
                 )
         if not response or response.status != 200:
             try:
                 if (
                     len(
-                        self.remoteZip.extract(
-                            member="BuildManifest.plist", path=self.outDir
+                        self.remote_zip.extract(
+                            member="BuildManifest.plist", path=self.outdir
                         )
                     )
                     < 1
                 ):
                     raise ValueError(
-                        f"{self.__class__.__name__}: {self.downloadManifest.__name__}: failed to download "
+                        f"{self.__class__.__name__}: {self.download_manifest.__name__}: failed to download "
                         f"BuildManifest!"
                     )
             except:
                 pass
         return True
 
-    def loadManifest(self) -> bool:
-        def openManifest(manifestFile):
-            manifestFile.seek(0, io.SEEK_SET)
-            self.manifest = plistlib.load(manifestFile)
+    def load_manifest(self) -> bool:
+        def open_manifest(manifest_file):
+            manifest_file.seek(0, io.SEEK_SET)
+            self.manifest = plistlib.load(manifest_file)
             if len(self.manifest) < 1:
                 return False
             else:
                 return True
 
-        if not fileIO(
-            path=self.buildManifestPath, binary=True, write=False, callback=openManifest
+        if not file_io(
+            path=self.build_manifest_path,
+            binary=True,
+            write=False,
+            callback=open_manifest,
         ):
             raise ValueError(
-                f"{self.__class__.__name__}: {self.loadManifest.__name__}: failed to open manifest "
+                f"{self.__class__.__name__}: {self.load_manifest.__name__}: failed to open manifest "
                 f"file!"
             )
         else:
             return True
 
-    def getBoardIdentity(self, board: str, update: bool = False) -> dict:
+    def get_board_identity(self, board: str, update: bool = False) -> dict:
         if self.manifest.get("BuildIdentities", None):
             for identity in self.manifest["BuildIdentities"]:
                 if identity.get("Info", None):
@@ -118,11 +120,13 @@ class BMParse:
         else:
             return {}
 
-    def getComponentPath(self, board: str, component: str, update: bool = False) -> str:
-        identity = self.getBoardIdentity(board, update)
+    def get_component_path(
+        self, board: str, component: str, update: bool = False
+    ) -> str:
+        identity = self.get_board_identity(board, update)
         if len(identity) < 1:
             raise ValueError(
-                f"{self.__class__.__name__}: {self.getComponentPath.__name__}: failed to find matching"
+                f"{self.__class__.__name__}: {self.get_component_path.__name__}: failed to find matching"
                 f" board identity!"
             )
         if identity.get("Manifest", None):
@@ -132,11 +136,11 @@ class BMParse:
                         return identity["Manifest"][component]["Info"]["Path"]
         return ""
 
-    def getComponentList(self, board, update: bool = False) -> list:
-        identity = self.getBoardIdentity(board, update)
+    def get_component_list(self, board, update: bool = False) -> list:
+        identity = self.get_board_identity(board, update)
         if len(identity) < 1:
             raise ValueError(
-                f"{self.__class__.__name__}: {self.getComponentList.__name__}: failed to find matching"
+                f"{self.__class__.__name__}: {self.get_component_list.__name__}: failed to find matching"
                 f" board identity!"
             )
         if identity.get("Manifest", None):

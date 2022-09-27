@@ -1,7 +1,7 @@
 import sys
 import click
-from pybmtool.BMParse import BMParse
-from pybmtool.BMTool import BMTool
+from pybmtool import BMParse
+from pybmtool import BMTool
 
 
 @click.group()
@@ -49,7 +49,7 @@ def component() -> None:
     help="Input restore variant",
     required=False,
 )
-def listComponents(
+def list_components(
     board_: str, manifest_: str = "", url_: str = "", variant_: int = 0
 ) -> None:
     """List components for board and variant from BuildManifest."""
@@ -63,7 +63,7 @@ def listComponents(
         if not url_ or len(url_) < 1:
             raise click.BadParameter("No ipsw url or BuildManifest provided")
     try:
-        bm = BMParse(buildManifestPath=manifest_, url=url_)
+        bm = BMParse(build_manifest_path=manifest_, url=url_)
     except:
         if url_ and len(url_) > 0:
             raise click.BadParameter(f"Failed to initialize BuildManifest: {url_}")
@@ -76,9 +76,9 @@ def listComponents(
         print(f"Getting list of components for {board_}, {variant} from {bm.url}")
     else:
         print(
-            f"Getting list of components for {board_}, {variant} from {bm.buildManifestPath}"
+            f"Getting list of components for {board_}, {variant} from {bm.build_manifest_path}"
         )
-    componentList = bm.getComponentList(board=board_, update=bool(variant_))
+    componentList = bm.get_component_list(board=board_, update=bool(variant_))
     for comp in componentList[:-1]:
         print(f"{comp}")
     print(f"{componentList[-1]}", end="")
@@ -125,7 +125,7 @@ def listComponents(
     help="Input component name",
     required=True,
 )
-def listComponent(
+def list_component(
     board_: str, component_: str, manifest_: str = "", url_: str = "", variant_: int = 0
 ) -> None:
     """Get path in ipsw for specified component for board and variant from BuildManifest."""
@@ -141,7 +141,7 @@ def listComponent(
         if not url_ or len(url_) < 1:
             raise click.BadParameter("No ipsw url or BuildManifest provided")
     try:
-        bm = BMParse(buildManifestPath=manifest_, url=url_)
+        bm = BMParse(build_manifest_path=manifest_, url=url_)
     except:
         if url_ and len(url_) > 0:
             raise click.BadParameter(f"Failed to initialize BuildManifest: {url_}")
@@ -156,9 +156,9 @@ def listComponent(
         )
     else:
         print(
-            f"Getting path of component {component_} for {board_}, {variant} from {bm.buildManifestPath}"
+            f"Getting path of component {component_} for {board_}, {variant} from {bm.build_manifest_path}"
         )
-    path = bm.getComponentPath(
+    path = bm.get_component_path(
         board=board_, component=component_, update=bool(variant_)
     )
     if not path or len(path) < 1:
@@ -216,7 +216,7 @@ def listComponent(
     help="Input output directory path",
     required=False,
 )
-def downloadComponent(
+def download_component(
     board_: str,
     component_: str,
     manifest_: str = "",
@@ -237,7 +237,7 @@ def downloadComponent(
         if not url_ or len(url_) < 1:
             raise click.BadParameter("No ipsw url or BuildManifest provided")
     try:
-        bm = BMParse(buildManifestPath=manifest_, url=url_)
+        bm = BMParse(build_manifest_path=manifest_, url=url_)
     except:
         if url_ and len(url_) > 0:
             raise click.BadParameter(f"Failed to initialize BuildManifest: {url_}")
@@ -245,7 +245,7 @@ def downloadComponent(
             raise click.BadParameter(f"Failed to initialize BuildManifest: {manifest_}")
     try:
         if outdir_ and len(outdir_) > 0:
-            bmt = BMTool(bm=bm, outDir=outdir_)
+            bmt = BMTool(bm=bm, outdir=outdir_)
         else:
             bmt = BMTool(bm=bm)
     except:
@@ -264,9 +264,9 @@ def downloadComponent(
         )
     else:
         print(
-            f"Downloading component {component_} for {board_}, {variant} from {bm.buildManifestPath}"
+            f"Downloading component {component_} for {board_}, {variant} from {bm.build_manifest_path}"
         )
-    path = bmt.downloadComponent(
+    path = bmt.download_component(
         board=board_, component=component_, update=bool(variant_)
     )
     if not path or len(path) < 1:

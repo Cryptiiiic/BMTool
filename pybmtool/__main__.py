@@ -1,10 +1,10 @@
 import sys
 import click
-from pybmtool import BMParse
-from pybmtool import BMTool
+from pybmtool import __version__, BMTool, BMParse
 
 
 @click.group()
+@click.version_option(__version__)
 def cli() -> None:
     """A Python CLI tool for parsing Apple's BuildManifest file."""
     sys.tracebacklimit = 0
@@ -76,7 +76,8 @@ def list_components(
         print(f"Getting list of components for {board_}, {variant} from {bm.url}")
     else:
         print(
-            f"Getting list of components for {board_}, {variant} from {bm.build_manifest_path}"
+            f"Getting list of components for {board_}, {variant} from"
+            f" {bm.build_manifest_path}"
         )
     componentList = bm.get_component_list(board=board_, update=bool(variant_))
     for comp in componentList[:-1]:
@@ -128,7 +129,8 @@ def list_components(
 def list_component(
     board_: str, component_: str, manifest_: str = "", url_: str = "", variant_: int = 0
 ) -> None:
-    """Get path in ipsw for specified component for board and variant from BuildManifest."""
+    """Get path in ipsw for specified component for board and variant from BuildManifest.
+    """
     if not board_ or len(board_) < 1:
         raise click.BadParameter("No board specified")
     if not component_ or len(component_) < 1:
@@ -152,11 +154,13 @@ def list_component(
         variant = "Update"
     if url_:
         print(
-            f"Getting path of component {component_} for {board_}, {variant} from {bm.url}"
+            f"Getting path of component {component_} for {board_}, {variant} from"
+            f" {bm.url}"
         )
     else:
         print(
-            f"Getting path of component {component_} for {board_}, {variant} from {bm.build_manifest_path}"
+            f"Getting path of component {component_} for {board_}, {variant} from"
+            f" {bm.build_manifest_path}"
         )
     path = bm.get_component_path(
         board=board_, component=component_, update=bool(variant_)
@@ -224,7 +228,8 @@ def download_component(
     url_: str = "",
     variant_: int = 0,
 ) -> None:
-    """Download specified component from ipsw for board and variant from BuildManifest."""
+    """Download specified component from ipsw for board and variant from BuildManifest.
+    """
     if not board_ or len(board_) < 1:
         raise click.BadParameter("No board specified")
     if not component_ or len(component_) < 1:
@@ -264,7 +269,8 @@ def download_component(
         )
     else:
         print(
-            f"Downloading component {component_} for {board_}, {variant} from {bm.build_manifest_path}"
+            f"Downloading component {component_} for {board_}, {variant} from"
+            f" {bm.build_manifest_path}"
         )
     path = bmt.download_component(
         board=board_, component=component_, update=bool(variant_)

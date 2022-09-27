@@ -18,8 +18,8 @@ class BMParse:
         if not self.build_manifest_path or len(self.build_manifest_path) < 1:
             if not self.url or len(self.url) < 1:
                 raise ValueError(
-                    f"{self.__class__.__name__}: {self.__init__.__name__}: buildManifestPath and url "
-                    f"are both empty, no data to use!"
+                    f"{self.__class__.__name__}: {self.__init__.__name__}:"
+                    " buildManifestPath and url are both empty, no data to use!"
                 )
             else:
                 self.remote_zip = remotezip.RemoteZip(url=self.url)
@@ -28,8 +28,8 @@ class BMParse:
                 self.build_manifest_path = f"{self.outdir}/BuildManifest.plist"
                 if not self.download_manifest():
                     raise ValueError(
-                        f"{self.__class__.__name__}: {self.__init__.__name__}: failed to download "
-                        f"manifest!"
+                        f"{self.__class__.__name__}: {self.__init__.__name__}: failed"
+                        " to download manifest!"
                     )
         self.load_manifest()
 
@@ -56,8 +56,8 @@ class BMParse:
                 callback=openManifest,
             ):
                 raise ValueError(
-                    f"{self.__class__.__name__}: {self.download_manifest.__name__}: failed to open manifest"
-                    f" for writing"
+                    f"{self.__class__.__name__}: {self.download_manifest.__name__}:"
+                    " failed to open manifest for writing"
                 )
         if not response or response.status != 200:
             try:
@@ -70,8 +70,8 @@ class BMParse:
                     < 1
                 ):
                     raise ValueError(
-                        f"{self.__class__.__name__}: {self.download_manifest.__name__}: failed to download "
-                        f"BuildManifest!"
+                        f"{self.__class__.__name__}: {self.download_manifest.__name__}:"
+                        " failed to download BuildManifest!"
                     )
             except:
                 pass
@@ -93,8 +93,8 @@ class BMParse:
             callback=open_manifest,
         ):
             raise ValueError(
-                f"{self.__class__.__name__}: {self.load_manifest.__name__}: failed to open manifest "
-                f"file!"
+                f"{self.__class__.__name__}: {self.load_manifest.__name__}: failed to"
+                " open manifest file!"
             )
         else:
             return True
@@ -126,8 +126,8 @@ class BMParse:
         identity = self.get_board_identity(board, update)
         if len(identity) < 1:
             raise ValueError(
-                f"{self.__class__.__name__}: {self.get_component_path.__name__}: failed to find matching"
-                f" board identity!"
+                f"{self.__class__.__name__}: {self.get_component_path.__name__}: failed"
+                " to find matching board identity!"
             )
         if identity.get("Manifest", None):
             if identity["Manifest"].get(component, None):
@@ -140,8 +140,8 @@ class BMParse:
         identity = self.get_board_identity(board, update)
         if len(identity) < 1:
             raise ValueError(
-                f"{self.__class__.__name__}: {self.get_component_list.__name__}: failed to find matching"
-                f" board identity!"
+                f"{self.__class__.__name__}: {self.get_component_list.__name__}: failed"
+                " to find matching board identity!"
             )
         if identity.get("Manifest", None):
             return list(identity["Manifest"].keys())

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pybmtool"
-version = "0.1.2"
+version = "0.1.3"
 description = "A Python library/CLI tool for parsing Apple's BuildManifest plist files inside a firmware ipsw/ota."
 authors = ["Cryptiiiic <liamwqs@gmail.com>"]
 license = "LGPL-3.0-only"

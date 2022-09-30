@@ -1,7 +1,7 @@
 import os
 
 
-def fileIO(path: str, binary: bool, write: bool, callback) -> bool:
+def file_io(path: str, binary: bool, write: bool, callback) -> bool:
     if len(path) < 1:
         return False
     if not write and not os.path.exists(path):

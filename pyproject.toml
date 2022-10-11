@@ -11,12 +11,12 @@ repository = "https://github.com/Cryptiiiic/BMTool"
 bmtool = "pybmtool.__main__:cli"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 remotezip = "^0.9.4"
 click = "^8.1.3"
 
 [tool.poetry.dev-dependencies]
-black = "^22.8.0"
+black = "^22.10.0"
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/Cryptiiiic/BMTool/issues"

@@ -1,6 +1,7 @@
 import sys
 import click
 from pybmtool import __version__, BMTool, BMParse
+import pybmtool.utils
 
 
 @click.group()
@@ -66,9 +67,13 @@ def list_components(
         bm = BMParse(build_manifest_path=manifest_, url=url_)
     except:
         if url_ and len(url_) > 0:
-            raise click.BadParameter(f"Failed to initialize BuildManifest: {url_}")
+            raise click.BadParameter(
+                f"Failed to initialize BuildManifest: {url_} ({pybmtool.utils.__LINE__()})"
+            )
         else:
-            raise click.BadParameter(f"Failed to initialize BuildManifest: {manifest_}")
+            raise click.BadParameter(
+                f"Failed to initialize BuildManifest: {manifest_} ({pybmtool.utils.__LINE__()})"
+            )
     variant = "Erase"
     if variant_ > 0:
         variant = "Update"
@@ -129,8 +134,7 @@ def list_components(
 def list_component(
     board_: str, component_: str, manifest_: str = "", url_: str = "", variant_: int = 0
 ) -> None:
-    """Get path in ipsw for specified component for board and variant from BuildManifest.
-    """
+    """Get path in ipsw for specified component for board and variant from BuildManifest."""
     if not board_ or len(board_) < 1:
         raise click.BadParameter("No board specified")
     if not component_ or len(component_) < 1:
@@ -228,8 +232,7 @@ def download_component(
     url_: str = "",
     variant_: int = 0,
 ) -> None:
-    """Download specified component from ipsw for board and variant from BuildManifest.
-    """
+    """Download specified component from ipsw for board and variant from BuildManifest."""
     if not board_ or len(board_) < 1:
         raise click.BadParameter("No board specified")
     if not component_ or len(component_) < 1:

@@ -34,7 +34,11 @@ class BMTool:
                 f"{self.__class__.__name__}: {self.download_component.__name__}: failed"
                 f" to get component path for {component}!"
             )
-        result = self.remote_zip.extract(member=path, path=self.outdir)
+        if self.bm.ota:
+            member = f"AssetData/boot/{path}"
+        else:
+            member = path
+        result = self.remote_zip.extract(member=member, path=self.outdir)
         if not result or len(result) < 1:
             raise ValueError(
                 f"{self.__class__.__name__}: {self.download_component.__name__}: failed"

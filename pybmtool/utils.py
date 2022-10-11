@@ -1,4 +1,5 @@
 import os
+import inspect
 
 
 def file_io(path: str, binary: bool, write: bool, callback) -> bool:
@@ -17,3 +18,7 @@ def file_io(path: str, binary: bool, write: bool, callback) -> bool:
         openType = f"{openType}+"
     with open(path, openType) as file:
         return callback(file)
+
+
+def __LINE__():
+    return inspect.stack()[1].lineno

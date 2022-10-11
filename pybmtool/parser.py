@@ -13,6 +13,7 @@ class BMParse:
         self.outdir = f"{os.getcwd()}"
         self.remote_zip = ""
         self.manifest = {}
+        self.ota = False
         if outdir and len(outdir) > 0:
             self.outdir = outdir
         if not self.build_manifest_path or len(self.build_manifest_path) < 1:
@@ -22,10 +23,18 @@ class BMParse:
                     " buildManifestPath and url are both empty, no data to use!"
                 )
             else:
+                if ".zip"[::-1] == self.url[::-1][0:4]:
+                    # print("URL is OTA!")
+                    self.ota = True
+                    self.build_manifest_path = (
+                        f"{self.outdir}/AssetData/boot/BuildManifest.plist"
+                    )
+                    print(self.build_manifest_path)
+                else:
+                    self.build_manifest_path = f"{self.outdir}/BuildManifest.plist"
                 self.remote_zip = remotezip.RemoteZip(url=self.url)
                 if not self.remote_zip:
                     raise Exception
-                self.build_manifest_path = f"{self.outdir}/BuildManifest.plist"
                 if not self.download_manifest():
                     raise ValueError(
                         f"{self.__class__.__name__}: {self.__init__.__name__}: failed"
@@ -36,12 +45,13 @@ class BMParse:
     def download_manifest(self) -> bool:
         if os.path.exists(self.build_manifest_path):
             os.remove(self.build_manifest_path)
-        manifest_url = f"{self.url.rsplit('/', 1)[0]}/BuildManifest.plist"
         response = None
-        try:
-            response = urllib.request.urlopen(url=manifest_url)
-        except:
-            pass
+        if not self.ota:
+            manifest_url = f"{self.url.rsplit('/', 1)[0]}/BuildManifest.plist"
+            try:
+                response = urllib.request.urlopen(url=manifest_url)
+            except:
+                pass
         if response is not None:
             data = response.read(response.length)
 
@@ -59,16 +69,13 @@ class BMParse:
                     f"{self.__class__.__name__}: {self.download_manifest.__name__}:"
                     " failed to open manifest for writing"
                 )
-        if not response or response.status != 200:
+        if response is None or not response or response.status != 200:
             try:
-                if (
-                    len(
-                        self.remote_zip.extract(
-                            member="BuildManifest.plist", path=self.outdir
-                        )
-                    )
-                    < 1
-                ):
+                if self.ota:
+                    member = "AssetData/boot/BuildManifest.plist"
+                else:
+                    member = "BuildManifest.plist"
+                if len(self.remote_zip.extract(member=member, path=self.outdir)) < 1:
                     raise ValueError(
                         f"{self.__class__.__name__}: {self.download_manifest.__name__}:"
                         " failed to download BuildManifest!"

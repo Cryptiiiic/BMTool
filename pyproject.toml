@@ -11,7 +11,7 @@ repository = "https://github.com/Cryptiiiic/BMTool"
 bmtool = "pybmtool.__main__:cli"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.7"
 remotezip = "^0.9.4"
 click = "^8.1.3"
 
